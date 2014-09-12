@@ -2,11 +2,11 @@ Sails.js Documentation > Core Concepts
 
 #Table of Contents
 
-1. Assets
+1. Assets（完了）
     - Default Tasks
     - Disabling Grunt
     - Task Automation
-2. CORS（元ドキュメント不明）
+2. CORS（移動）
 3. Configuration（完了）
     - Using .sailsrc Files
 4. Controllers（完了）
@@ -15,12 +15,12 @@ Sails.js Documentation > Core Concepts
     - FAQ
     - Hosting
     - Scaling
-7. File Uploads （あとで）
-8. Globals（あとで）
-9. Internationalization（省略）
-10. Logging（あとで）
+7. File Uploads （オリジナル整備後に）
+8. Globals（完了）
+9. Internationalization（あとで）
+10. Logging（優先）
     - sails.log
-11. Middleware（省略）
+11. Middleware（優先）
 12. Models
     - Attributes
     - Lifecycle callbacks
@@ -68,8 +68,8 @@ Sails.js Documentation > Core Concepts
     - .validate()
     - .watch()
     - .where()
-13. Policies（省略）
-14. Routes（省略）
+13. Policies（完了）
+14. Routes（完了）
     - Route Target Syntax
     - URL Slugs
 15. Security（省略）

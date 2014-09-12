@@ -39,35 +39,38 @@ Sailsはデフォルトでsails-diskを利用するので、ローカルの一�
 
 多くの業務用アプリケーションは既存のデータベースと統合しなければなりません。ラッキーなケースにおいてはデータのマイグレーションを一度行うだけで済むでしょう。しかし、多くの場合においては既存のデータは他のアプリケーションから依然として編集されています。アプリケーションを開発するにあたって複数のレガシーなシステムや別の場所にあるデータセットからのデータを結合させる必要があるかも知れません。このデータベースは世界中の離れた５地点にあることだってあるのです。
 あるデータベースはMySQLに保管されたリレーショナルデータベースかも知れませんし、またあるほかのものはクラウド上に設置されたMongoやRedisのデータコレクションかも知れません。
-｀
 
-Sails/Waterline lets you hook up different models to different datastores; locally or anywhere on the internet. You can build a User model that maps to a custom MySQL table in a legacy database (with weird crazy column names). Same thing for a Product model that maps to a table in DB2, or an Order model that maps to a MongoDB collection. Best of all, you can .populate() across these different datastores and adapters, so if you configure a model to live in a different database, your controller/model code doesn't need to change (note that you will need to migrate any important production data manually)
+Sails/Woterlineは（それがローカルにあろうと、インタネット上のどこかにあろうと）異なるデータストアにある異なるデータモデルをつなぎ合わせます。これによりレガシーのデータベースにあるテーブルの（とんでもないテーブル名の）データを使ってUserモデルを作成することが出来ます。同じようなことをProductモデルをDB2のデータベースから引っ張ってきたり、OrderモデルをMongoのデータコレクションから引っ張ってくることが出来ます。
+更に最も良いことはそれらの複数のデータベースを通じてデータを.populate()することができるのでコントローラやモデルのコードを変更することなく複数のデータベースにあるデータを移行することができることです。（ただし本番環境のデータは手動でマイグレーションしなければなりません。）
 
-###Performance
 
-You're sitting in front of your laptop late at night, and you realize:
+###パフォーマンス
+
+あなたは夜遅くあなたのパソコンの前に座っていてこんなことに気づきます。:
 
 ```
-"How can I do keyword search? The product data doesn't have any keywords, and the business wants search results ranked based on n-gram word sequences. Also I have no idea how this recommendation engine is going to work. Also if I hear the words big data one more time tonight I'm quitting and going back to work at the coffee shop."
+"どうやってキーワード検索をすればいいっていうんだよ。商品データはキーワードなんて無いじゃないか。しかもビジネス部門はnグラムワードの順番に並び替えて結果表示したいって言ってるじゃないか。それにどうやってレコメンデーションエンジンを動かすかもわからないぞ。しかも今夜またビッグデータとか聞いたぞ。もうやめちまって珈琲屋でのバイトに戻りたいよ。"
 ```
 
-So what about the "big data"? Normally when you hear bloggers and analyst use that buzzword, you think of data mining and business intelligence. You might imagine a process that pulls data from multiple sources, processes/indexes/analyzes it, then writes that extracted information somewhere else and either keeps the original data or throws it away.
+ところで、「ビッグデータ」に関してはどうでしょうか。通常この言葉をブロガーやアナリストがバズワードとして使うときにはデータマイニングやビジネスインテリジェンスのようなものを考えるでしょう。つまり、こういうことと考えるかもしれません。データを複数のソースから取ってきて、それを何らかの処理、インデックス化、分析してそれからそれをそのまま使うなり、全く熱の形するなりして何らかの付加価値のついたデータを得ると。
 
-However, there are some much more common challenges that lend themselves to the same sort of indexing/analysis needs; features like "driving-direction-closeness" search, or a recommendation engine for related products. Fortunately, a number of databases simplify specific big-data use cases (for instance MongoDB provides geospatial indexing, and ElasticSearch provides excellent support for indexing data for full-text search).
+しかしそれ以上に特定のインデックスや検索に対するニーズに適した試みを皆行うことでしょう。そのニーズとはすなわち関連商品を検索したりレコメンドするエンジンに利用される"driving-direction-closeness"と呼ばれる機能のようなものです。幸い、いくつかのデータベースによってそれらの機能を簡単にすることが出来ます。（例えばMongo DBは空間地理学的なインデックス機能や全文検索やインデックスづくりに見事に対応した柔軟性のある検索機能を提供しています。）
 
-Using databases in the way they're intended affords tremendous performance benefits, particularly when it comes to complex report queries, searching (which is really just customized sorting), and NLP/machine learning. Certain databases are very good at answering traditional relational business queries, while others are better suited for map/reduce-style processing of data, with optimizations/trade-offs for blazing-fast read/writes. This consideration is especially important as your app's user-base scales.
+データベースを意図されたように使うということはパフォーマンス面で多大なメリットが有ります。特に複雑なレポートクレリを投げるときや検索（ソートを変えるだけでも）の時、機械学習をするときなどはその最たるものです。あるデータベースは昔ながらのビジネスクエリーをとても得意としますが、またあるものは特に速い読み書きの代わりにデータのMAPリデュースを得意とします。このような考慮がユーザベースのスケーリングでは特に重要となるのです。
 
-###Adapters
 
-Like most MVC frameworks, Sails supports multiple databases. That means the syntax to query and manipulate our data is always the same, whether we're using MongoDB, MySQL, or any other supported database.
+###アダプタ
 
-Waterline builds on this flexibility with its concept of adapters. An adapter is a bit of code that maps methods like find() and create() to a lower-level syntax like SELECT * FROM and INSERT INTO. The Sails core team maintains open-source adapters for a handful of the most popular databases, and a wealth of community adapters are also available.
+他の多くのMVCフレームワークと同様にSailsは複数のデータベースをサポートします。これは我々がMySQLを使う時もMongo DBを使うときにもその他のDBを使う時にもみんな同じ方法でデータの問い合わせや操作を行えるということです。
 
-Custom Waterline adapters are actually pretty simple to build, and can make for more maintainable integrations; anything from a proprietary enterprise system, to an open API like LinkedIn, to a cache or traditional database.
+Waterlineはアダプタに関してもこのようなフレキシビリイティのあるコンセプトで作られています。アダプタはfind()やcreate（）のようなマッピングメソッドをSELECT * FROM やINSERT INTOのようなローレベルのメソッドに書き換えることを目的にした小さなコードです。Sailsのコアチームのメンテナーはポピュラーなデータベースに対してのアダプタをオープンソースでメンテナンスしますし、コミュニティの成果を利用することも出来ます。
 
-###Connections
+カスタムのWaterlineアダプタは実はとっても簡単に作ることが出来ますし、インテグレーションをもっとメンテナンスしやすくすることが出来ます。（有名な業務用システムやLinked in などのオープンAPI、キャッシュたトラディショナルなデータベースに至るまで。）
 
-A connection represents a particular database configuration. This configuration object includes an adapter to use, as well as information like the host, port, username, password, and so forth. Connections are defined in config/connections.js.
+
+###コネクション
+
+コネクションは個々のデータベースへの接続を意味します。この設定オブジェクトは使用するアダプタやホスト、ポート、ユーザ名、パスワードなどの接続情報を含みます。コネクションはconfig/connections.jsにあります。
 
 ```
 // in config/connections.js
@@ -82,19 +85,21 @@ A connection represents a particular database configuration. This configuration 
 // ...
 ```
 
-The default database connection for a Sails app is located in the base model configuration (config/models.js), but it can also be overriden on a per-model basis by specifying a connection.
+Sailアプリケーションにおけるデフォルトのデータベース接続はベースモデル設定(config/models.js)にあります。しかし、モデルごとにコネクションを指定することでオーバーライド出来ます。
 
-###Analogy
 
-Imagine a file cabinet full of completed pen-and-ink forms. All of the forms have the same fields (e.g. "name", "birthdate", "maritalStatus"), but for each form, the values written in the fields vary. For example, one form might contain "Lara", "2000-03-16T21:16:15.127Z", "single", while another form contains "Larry", "1974-01-16T21:16:15.127Z", "married".
+###喩え話
 
-Now imagine you're running a hotdog business. If you were very organized, you might set up your file cabinets as follows:
+紙にペンで書かれている記入済みのフォームでいっぱいになった引き出しを想像してください。すべてのフォームは同じ項目を持っています。（例えば名前とか、誕生日
+、婚姻状況のように）しかし、それぞれのフォームに書かれていることは様々です。例えばあるフォームは "Lara", "2000-03-16T21:16:15.127Z", "single", と、また別のあるものは "Larry", "1974-01-16T21:16:15.127Z", "married"と。
 
-* Employee (contains your employee records)
+あなたがホットドッグの商売を経営していると想像してください。もしもあなたがとても几帳面ならこのようなファイルを引き出しに作るでしょう。:
+
+* Employee (従業員の情報を格納)
     * fullName
     * hourlyWage
     * phoneNumber
-* Location (contains a record for each location you operate)
+* Location (営業拠点の情報を格納)
     * streetAddress
     * city
     * state
@@ -103,22 +108,24 @@ Now imagine you're running a hotdog business. If you were very organized, you mi
         * a list of all the purchases made at this location
     * manager
         * the employee who manages this location
-* Purchase (contains a record for each purchase made by one of your customers)
+* Purchase (それぞれの顧客が購入した情報を格納)
     * madeAtLocation
     * productsPurchased
     * createdAt
-* Product (contains a record for each of your various product offerings)
+* Product (販売しているものそれぞれの情報を格納)
     * nameOnMenu
     * price
     * numCalories
     * percentRealMeat
     * availableAt
-        * a list of the locations where this product offering is available.
-In your Sails app, a model is like one of the file cabinets. It contains records, which are like the forms. Attributes are like the fields in each form.
+        * その商品を買うことが出来る営業拠点。
+        
+Sailsのアプリケーションではモデルは引き出しの中の一つのファイルのようなものです。ファイルはレコードを含みますがこれはそれぞれのフォームのようなものです。アトリビュートはそれぞれのフォームの項目です。
 
-###Notes
+###備考
 
-This documentation on models is not applicable if you are overriding the built-in ORM, Waterline. In that case, your models will follow whatever convention you set up, on top of whatever ORM library you're using (e.g. Mongoose.)
+このモデルに関してのドキュメントはもしあなたが初期状態のORMであるWaterlineを上書きしているときは当てはまりません。そのような場合はあなたが設定したモデルの上位レイヤー(例えばMongooseなど)でのやりかたに従ってください。
+
 
 ##アソシエーション
 
@@ -934,13 +941,14 @@ Sailsはモデルのアトリビュートに対する自動バリデーション
 |uuidv3	|文字列はUUID(v3)か。|
 |uuidv4	|文字列はUUID(v4)か。|
 
-###Custom Validation Rules
+###カスタムバリデーションルール
 
-You can define your own types and their validation with the types object. It's possible to access and compare values to other attributes (with "this"). This allows you to move validation business logic into your models and out of your controller logic.
+タイプオブジェクトを使うとオリジナルのバリデーション規則を定義することが出来ます。ここでは別々のアトリビュートを参照し、比較することも出来ます("this"を使って)。これによりバリデーションのビジネスロジックをコントローラからモデルへと移動することが出来ます。
 
-Note that your own type always have to be a variant of the basic data-types ("string", "int", "json", ...)
+あなたの名づけたバリデーションスールは常に基本データ型("string", "int", "json"など)と異なっている必要があることを覚えておいてください。
 
-####Example Model
+
+####モデルの例
 
 ```
 // api/models/foo
@@ -962,7 +970,7 @@ module.exports = {
       maxLength: 15
     },
     location: {
-      //note, that the base type (json) still has to be defined
+      //ベースのタイプ（Json）は依然として定義しなければなりません。
       type: 'json',
       is_point: true
     },
@@ -978,9 +986,9 @@ module.exports = {
 }
 ```
 
-##Model Settings
+##モデルの設定
 
-The following properties can be specified at the top level of your model definition to override the defaults for that particular model. To override the default settings shared by all of your models, edit config/models.js.
+特定のモデルでのデフォルトをオーバーライドするために以下のプロパティをアプリケーションのモデル定義のトップレベルにおいてステイすることが出来ます。あなたのアプリケーションで使われすすべてのモデルで使われるデフォルト設定をオーバーライドするためにはconfig/models.jsを編集してください。
 
 ###migrate
 
@@ -988,24 +996,25 @@ The following properties can be specified at the top level of your model definit
 migrate: 'safe'
 ```
 
-In short, this setting controls whether/how Sails will attempt to automatically rebuild the tables/collections/sets/etc. in your schema.
+単純に言うとこの設定はSailsがあなたのスキーマのテーブルやコレクション、セットなどをどのようにして自動リビルドするかを定義するものです。
 
-In a production environment (NODE_ENV==="production") Sails always uses migrate:"safe" to protect inadvertent deletion of your data. However during development, you have a few other options for convenience:
-
-1. safe - never auto-migrate my database(s). I will do it myself (by hand)
-2. alter - auto-migrate, but attempt to keep my existing data (experimental)
-3. drop - wipe/drop ALL my data and rebuild models every time I lift Sails
-
-When your sails app lifts, waterline validates your all of the data in your database. This flag tells waterline what to do with data when the data is corrupt. You can set this flag to safe which will ignore the corrupt data and continue to lift. You can also set it to `
+本番環境(NODE_ENV==="production"の状態の時)にはSailsはデータを不用意に削除してしまうのを防ぐため、つねにmigrate:"safe"を利用します。然し開発環境では簡便のために他の方法を使うことが出来ます。
 
 
-|Auto-Migration Strategy|Description|
+1. safe - データベースを自動マイグレーションしません。開発者が手動でやります。
+2. alter - データを保持したまま自動マイグレーションします。（実験的運用）
+3. drop - Sailsを起動するときにすべてのデータを消してデータベースを再構築します。
+
+Sailsを起動するときにWaterlineはデータベースの中にあるすべてのデータをバリデーションします。このフラグはデーが破壊された時にどのように振る舞うかを伝えるものです。起動時に破損したデータを無視したいのであればsafeにセットすることが出来ます。
+
+
+|オートマイグレーションストラテジー|定義|
 |---|---|
-|safe|never auto-migrate my database(s). I will do it myself, by hand.|
-|alter|auto-migrate columns/fields, but attempt to keep my existing data (experimental)|
-|drop|wipe/drop ALL my data and rebuild models every time I lift Sails|
+|safe|データベースを自動マイグレーションしません。開発者が手動でやります。|
+|alter|データを保持したまま自動マイグレーションします。（実験的運用）|
+|drop|Sailsを起動するときにすべてのデータを消してデータベースを再構築します。|
 
-Note, by using drop, or even alter, you risk losing your data. Be careful. Never use drop or alter with a production dataset.
+備考　dropを行うことではもちろん、alterでもデータ消失のリスクが有ります。ご注意ください。本番環境でのデータセットでは決してdropを使わないでください。
 
 ###schema
 
@@ -1013,9 +1022,10 @@ Note, by using drop, or even alter, you risk losing your data. Be careful. Never
 schema: true
 ```
 
-A flag to toggle schemaless or schema mode in databases that support schemaless data structures. If turned off, this will allow you to store arbitrary data in a record. If turned on, only attributes defined in the model's attributes object will be stored.
+データベースがスキーマレスなデータ構造に対応している場合、このフラグでスキーマレスとスキーマモードの変更ができます。オフの時にはレコード内に任意のデータを保存できるようになります。オンの時にはモデルのアトリビュートで定義されたアトリビュートオブジェクトのみが保存できます。
 
-For adapters that don't require a schema, such as Mongo or Redis, the default setting is schema:false.
+スキーマがなくてもいいアダプタ（MongoやRedisなど）ではschema:falseがデフォルトの設定になります。
+
 
 ###connection
 
@@ -1023,7 +1033,8 @@ For adapters that don't require a schema, such as Mongo or Redis, the default se
 connection: 'my-local-postgresql'
 ```
 
-The configured database connection where this model will fetch and save its data. Defaults to localDiskDb, the default connection that uses the sails-disk adapter.
+設定済みのデータベース接続設定のうち、このモデルがデータを取得したるデータを書き込むものです。デフォルトはsails-diskをつかったSailsのデフォルトのデータベースであるlocalDiskDbが選択されます。
+
 
 ###identity
 
@@ -1031,7 +1042,8 @@ The configured database connection where this model will fetch and save its data
 identity: 'purchase'
 ```
 
-The lowercase unique key for this model, e.g. user. By default, a model's identity is inferred automatically by lowercasing its filename. You should never change this property on your models.
+userのような、小文字で書かれたこのモデルのユニークキーです。デフォルトではモデルの名前はファイル名を小文字化したもので自道的に推測されますモデル内でこのフラグを変更してはいけません。
+
 
 ###globalId
 
@@ -1039,7 +1051,7 @@ The lowercase unique key for this model, e.g. user. By default, a model's identi
 globalId: 'Purchase'
 ```
 
-This flag changes the global name by which you can access your model (if the globalization of models is enabled). You should never change this property on your models- to disable globals, see sails.config.globals.
+このフラッグはモデルに（モデルのグローバルアクセスが許可されている場合に限り）グローバルでアクセス可能な際の名前を決定します。models-においてモデルのグローバルを無効化するためにこのフラグを使ってはいけません。sails.config.globalsを御覧ください。
 
 ###autoPK
 
@@ -1047,7 +1059,9 @@ This flag changes the global name by which you can access your model (if the glo
 autoPK: true
 ```
 
-A flag to toggle the automatic definition of a primary key in your model. The details of this default PK vary between adapters (e.g. MySQL uses an auto-incrementing integer primary key, whereas MongoDB uses a randomized string UUID). In any case, the primary keys generated by autoPK will be unique. If turned off no primary key will be created by default, and you will need to define one manually, e.g.:
+自動で主キーアトリビュートを定義するかどうかを定義するフラグです。デフォルトのPKはアダプタによって異なります。（例えば、MySQLはオートインクリメントの整数を使いますし、Mongo DBはランダムなUUIDを使います。）いずれのケースにおいてもautoPKで作成された主キーはユニークです。もしこの機能をOffにしたら自動で主キーは作成されなくなりますので手動設定する必要があります。
+
+例：
 
 ```
 attributes: {
@@ -1065,7 +1079,7 @@ attributes: {
 autoCreatedAt: true
 ```
 
-A flag to toggle the automatic definition of a createdAt attribute in your model. By default, createdAt is an attribute which will be automatically set when a record is created with the current timestamp, e.g.:
+自動でcreatedAtアトリビュートをモデルに追加するかどうかを定義するフラグです。デフォルトではcreatedAtにはレコードが作成された時に自動で現在時刻のタイムスタンプが記録されます。例：
 
 ```
 attributes: {
@@ -1082,8 +1096,11 @@ attributes: {
 autoUpdatedAt: true
 ```
 
-A flag to toggle the automatic definition of a updatedAt attribute in your model. By default, updatedAt is an attribute which will be automatically set with the current timestamp every time a record is updated, e.g.: 
+自動でupdatedAtアトリビュートをモデルに追加するかどうかを定義するフラグです。デフォルトではupdatedAtには毎回更新が行われうごとに自動で現在時刻のタイムスタンプが記録されます。例: 
+
+```
 attributes: { updatedAt: { type: 'datetime', defaultsTo: function (){ return new Date(); } } }
+```
 
 ###tableName
 
@@ -1091,9 +1108,9 @@ attributes: { updatedAt: { type: 'datetime', defaultsTo: function (){ return new
 tableName: 'some_preexisting_table'
 ```
 
-You can define a custom name for the physical collection in your adapter by adding a tableName attribute. This isn't just for tables. In MySQL, PostrgreSQL, Oracle, etc. this setting refers to the name of the table, but in MongoDB or Redis, it refers to the colelction, and so forth. If no tableName is specified, Waterline will use the model's identity as its tableName.
+tableNameを加える事にアダプタの実際のコレクションの中におけるコレクション名を指定することが出来ます。これはテーブル名には限りません。MySQLやPostgreSQL、Oracleなどではこれはテープル名を意味しますが、Mongo DBやRedisではコレクション名を意味するなどのことが行われます。tableNameが定義されていなければWaterlineはモデルのidentityをtableNameとして利用します。
 
-This is particularly useful for working with pre-existing/legacy databases.
+これはすでに存在するレガシーのデータベースと一緒に利用する際に便利です。
 
 ###attributes
 
@@ -1105,5 +1122,5 @@ attributes: {
 }
 ```
 
-See Attributes.
+アトリビュートの項目をご覧ください。
 

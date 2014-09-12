@@ -58,8 +58,9 @@ javascriptとcssをそれぞれ連結し.tmp/public/concat/ディレクトリに
 
 ####copy
 
-dev task config Copies all directories and files, exept coffescript and less files, from the sails assets folder into the .tmp/public/ directory.
-build task config Copies all directories and files from the .tmp/public directory into a www directory.
+dev task設定の時はcoffescriptとlessファイル以外のすべてのファイルとディレクトリーをSailsのアセットフォルダーから.tmp/public/ディレクトリにコピします。
+
+build task設定の時は全てのファイルとディレクトリを.tmp/publicディレクトリからwwwディレクトリにコピーします。
 
 利用方法（翻訳未完）
 
@@ -84,7 +85,8 @@ LESSファイルをCSSにコンパイルします。assets/styles/importer.less�
 
 ####sails-linker
 
-Automatically inject \<script\> tags for javascript files and \<link\> tags for css files. Also automatically links an output file containing precompiled templates using a \<script\> tag. A much more detailed description of this task can be found here, but the big takeaway is that script and stylesheet injection is only done in files containing \<!--SCRIPTS--\>\<!--SCRIPTS END--\> and/or \<!--STYLES--\>\<!--STYLES END--\> tags. These are included in the default views/layout.ejs file in a new Sails project. If you don't want to use the linker for your project, you can simply remove those tags.
+Javascriptのタグには\<script\>を、CSSファイルには\<link\>を自動的に挿入します。また、\<script\>を使ってプレコンパイル済みのテンプレートに対してリンクを行います。これらに対する詳細な説明はこちらで確認することが出来ますが、おさえておきたい大切なことはスクリプトとスタイルシートの挿入は \<!--SCRIPTS--\>\<!--SCRIPTS END--\>や\<!--STYLES--\>\<!--STYLES END--\のタグを含むファイルのみで行われるということです。また、これらは新しく作成したSailsプロジェクトのviews/layout.ejsにデフォルトで自動的に組み込まれています。もしあなたのプロジェクトでリンカーを使いたくない時は単にこれ他のタグを削除してください。
+
 
 利用方法（翻訳未完）
 
@@ -103,7 +105,7 @@ Automatically inject \<script\> tags for javascript files and \<link\> tags for 
 
 ####watch
 
-Runs predefined tasks whenever watched file patterns are added, changed or deleted. Watches for changes on files in the assets/ folder, and re-runs the appropriate tasks (e.g. less and jst compilation). This allows you to see changes to your assets reflected in your app without having to restart the Sails server.
+ファイルパターンが追加され、編集され、削除された時に毎回予め設定されたスクリプトを実行します。assets/フォルダに配置されたファイルを監視し、（例えばLESSやJSTのコンパイルのような）適切なタスクを再実行します。これにより行った編集の結果をSailsを再起動することなく確認することが出来ます。
 
 利用方法（翻訳未完）
 
@@ -138,36 +140,39 @@ Sailsは簡便のためにいくつかのデフォルトのタスクをバンド
 今までにGruntを使ったことがない方はGetting Started guideを見てください。そこにはGruntfileの書き方やインストール方法が書かれています。
 
 
-###Asset pipeline
+###アセットパイプライン
 
-The asset pipeline is the place where you will organize the assets that will be injected into your views, and it can be found in the tasks/pipeline.js file. Configuring these assets is simple and uses grunt task file configuration and wildcard/glob/splat patterns. They are broken down into three sections.
+アセットパイプラインはビューに挿入されるアセットを整形する部分であり、tasks/pipeline.jsファイルに記述されます。これらは3つの部分からなります。
+これらのアセットを設定するにはGruntにタスクファイル設定とwildcard/glob/splaのパターンを使うだけで簡単にできます。
 
-###CSS Files to Inject
+###CSSファイルの挿入
 
-This is an array of css files to be injected into your html as <link> tags. These tags will be injected between the <!--STYLES--><!--STYLES END--> comments in any view in which they appear.
+ここではHTMLに\<link\>タグとして挿入されるCSSファイルを指定します。これらのタグは全てのビューの<!--STYLES--><!--STYLES END-->コメントの間に挿入されます。
 
-###Javascript Files to Inject
+###Javascriptファイルの挿入
 
-This is an array of Javascript files that gets injected into your html as \<script\> tags. These tags will be injected between the \<!--SCRIPTS--\>\<!--SCRIPTS END--\> comments in any view in which they appear. The files get injected in the order they are in the array (i.e. you should place the path of dependecies before the file that depends on them.)
+ここではHTMLに\<script\>タグとして挿入されるCSSファイルを指定します。これらのタグは全てのビューの<!--STYLES--><!--STYLES END-->コメントの間に挿入されます。各ファイルは配列の並び順に基づいて挿入されます。（すなわち依存するファイルのパスの前に依存されるファイルのパスを入れなければなりません）
 
-###Template Files to Inject
 
-This is an array of html files that will compiled to a jst function and placed in a jst.js file. This file then gets injected as a \<script\> tag in between the \<!--TEMPLATES--\>\<!--TEMPLATES END--\> comments in your html.
-The same grunt wildcard/glob/splat patterns and task file configuration are used in some of the task configuration js files themselves if you would like to change those too.
+###テンプレートファイルの挿入
 
-###Task configuration
+ここではjstファンクションにコンパイルされjst.jsファイルに保存されるhtmlファイルの配列を指定します。このファイルはその後\<script\>タグとしてHTMLの\<!--TEMPLATES--\>\<!--TEMPLATES END--\> コメントの間に挿入されます。同じGruntのwildcard/glob/splatとタスク設定ファイルはいくつかのタスク設定jsファイル自体でで使われていますので変更を加えたいときはそれらも同様に編集してください。
 
-Configured tasks are the set of rules your Gruntfile will follow when run. They are completely customizable and are located in the tasks/config/ directory. You can modify, omit, or replace any of these Grunt tasks to fit your requirements. You can also add your own Grunt tasks- just add a someTask.js file in this directory to configure the new task, then register it with the appropriate parent task(s) (see files in grunt/register/*.js). Remember, Sails comes with a set of useful default tasks that are designed to get you up and running with no configuration required.
 
-###Configuring a custom task.
+###タスク設定
 
-Configuring a custom task into your project is very simple and uses Grunt’s config and task APIs to allow you to make your task modular. Let’s go through a quick example of creating a new task that replaces an existing task. Let’s say we want to use the Handlebars templating engine instead of the underscore templating engine that comes configured by default:
+設定済みのタスクはGruntfileが実行されたとき適用されるルールをまとめたものです。これらtasks/config/にあり、完全にカスタマイズ可能です。あなたの使いたい用途に合わせてこれたのGruntファイルのうち全てを編集し、省略し、また置き換えることが出来ます。同様にsomeTask.jsのようなファイルをこのディレクトリに追加し他の適切なタスクと一緒に登録することで(grunt/register/*.jsのファイルを参照してください。)あなた自身のGruntファイルを作成することも出来ます。なおSailsは特段の設定なしに起動できるように便利なデフォルトのタスクのセットを持っているということも忘れずにいてください。
 
-* The first step is to install the handlebars grunt plugin using the following command in your terminal:
+
+###カスタムのタスクを設定する
+
+
+プロジェクトにカスタムのタスクを設定するのはとてもシンプルで、Gruntの設定とタスクAPIを使うことでタスクをモジュールにすることが出来ます。既存のタスクを置き換えて新しいタスクを作成する例を見てみましょう。デフォルトで設定されているunderscoreの代わりにHandlebarsをテンプレートエンジンとして使いたいとします。:
+
+* まずはじめに以下のコマンドをターミナルで実行することでHandlebarsのGruntプラグインをインストールするところから始めます。:
 npm install grunt-contrib-handlebars --save-dev
 
-Create a configuration file at tasks/config/handlebars.js. This is where we’ll put our handlebars configuration.
-
+tasks/config/handlebars.jsに設定ファイルを作成します。これはhandlebarsの設定を入れるところです。 
 ```
 // tasks/config/handlebars.js
 // --------------------------------
@@ -193,7 +198,7 @@ module.exports = function(grunt) {
 };
 ```
 
-Replace the path to source files in asset pipeline. The only change here will be that handelbars looks for files with the extension .hbs while underscore templates can be in simple html files.
+アセットパイプラインにおけるソースファイルのパス設定を書き換えます。ここでの唯一の変更点はunderscoreのテンプレートはシンプルなHTMLファイルの中に入れれるのに対してhandelbarsは.hbs拡張子のファイルを参照するということです。
 
 ```
 // tasks/pipeline.js
@@ -229,7 +234,8 @@ module.exports = {
   })
 };
 
-Include the hanldebars task into the compileAssets and syncAssets registered tasks. This is where the jst task was being used and we are going to replace it with the newly configured handlebars task.
+compileAssetsとsyncAssetsの登録済みタスクににhanldebarsのタスクをインクルードします。ここはjstタスクが使われるところですが、これを新しく設定したhandlebarsで置き換えます。
+
 
 // tasks/register/compileAssets.js
 // --------------------------------
@@ -259,25 +265,26 @@ module.exports = function (grunt) {
 };
 ```
 
-Remove jst task config file. We are no longer using it so we can get rid of tasks/config/jst.js. Simply delete it from your project.
-Ideally you should delete it from your project and your project's node dependencies. This can be done by running this command in your terminal.
+jstタスクの設定を削除します。我々はすでにtasks/config/jst.jsを必要としないのでこれを削除することが出来ます。単にプロジェクトから削除するだけで構いません。理想的にはこれをプロジェクトとプロジェクトのnode dependenciesから削除します。これは以下のコマンドを実行することで行えます。
+
 npm uninstall grunt-contrib-jst --save-dev
 
-###Task triggers
+###タスクのトリガー
 
-In development mode, Sails runs the default task (tasks/register/default.js). This compiles LESS, CoffeeScript, and client-side JST templates, then links to them automatically from your app's dynamic views and static HTML pages.
-In production, Sails runs the prod task (tasks/register/prod.js) which shares the same duties as default, but also minifies your app's scripts and stylesheets. This reduces your application's load time and bandwidth usage.
-These task triggers are "basic" Grunt tasks located in the tasks/register/ folder. Below, you'll find the complete reference of all task triggers in Sails, and the command which kicks them off:
+
+デベロップメントモードにおいてはSailsはデフォルトのタスク(tasks/register/default.js)を実行します。これはLESSやCoffeeScript、クライアントサイドのJSTテンプレートをコンパイルし、アプリケーションの動的なビューと静的なHTMLページにリンクします。
+本番環境においてはSailsは本番環境のタスク(tasks/register/prod.js)を実行し、これはこれはデフォルトのタスクに加えてアプリケーションのスタイルシートスクリプトを最小化します。これによりアプリケーションの読み込み時間と利用帯域を節約することが出来ます。
+これらのタスクのトリガーはtasks/register/フォルダーにあるGruntの"basic"タスクに有ります。以下にSailsの全てのタスクトリガーとそれぞれが走らせるコマンドのリファレンスを説明します。:
 
 ####sails lift
 
-Runs the default task (tasks/register/default.js).
+デフォルトのタスクを実行します。(tasks/register/default.js).
 sails lift --prod
 
-Runs the prod task (tasks/register/prod.js).
+本番環境のタスクを実行します。(tasks/register/prod.js).
 ####sails www
 
-Runs the build task (tasks/register/build.js).
+ビルドタスクを実行します。(tasks/register/build.js).
 ####sails www --prod (production)
 
-Runs the buildProd task (tasks/register/buildProd.js).
+本番環境のビルドタスクを実行します。 (tasks/register/buildProd.js).
