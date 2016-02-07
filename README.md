@@ -1,9 +1,4 @@
 # Sails.js Documentation (v0.10.x)日本語版
 
-
-これはSailsのドキュメントの日本語版です。
-私が業務上必要になった箇所を自分用に訳したものですので、一部翻訳がなされていない部分がありますがご了承ください。
-
-
-## どこから読んでいけばいいの？
-Conceptsから読んでいってください。各ファイル名は原文の章タイトルに対応しています。
+## We moved! このレポジトリを移動しました。
+The repository is moved to [here](https://github.com/kory-yhg/sails-docs-ja).
